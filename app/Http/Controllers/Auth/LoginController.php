@@ -3,55 +3,66 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Factories\Interfaces\UserFactoryInterface;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
-    use AuthenticatesUsers;
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $user_repository;
 
     /**
-     * Where to redirect users after login.
-     *
-     * @var string
+     * @var UserFactoryInterface
      */
-    protected $redirectTo = '/';
+    protected $user_factory;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest', ['except' => 'logout']);
+    public function __construct(
+        UserRepositoryInterface $user_repository,
+        UserFactoryInterface $user_factory
+    ) {
+        $this->user_repository = $user_repository;
+        $this->user_factory = $user_factory;
     }
 
-    public function username()
+    /**
+     * Login or register user.
+     */
+    public function login(LoginRequest $request)
     {
-        return 'username';
-    }
-
-    public function login(Request $request)
-    {
-        $this->validateLogin($request);
-
-        if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+        if (\Auth::attempt($request->only(['username', 'password']))) {
+            return redirect()->route('root');
         }
 
-        $request_forward = Request::create('/register', 'POST', $request->all());
-        return \Route::dispatch($request_forward);
+        $username = $request->input('username');
+
+        $user = $this->user_repository->getByUsername($username);
+
+        if (!$user) {
+            $user = $this->user_factory->create($request->only(['username', 'password']));
+        } else {
+            $request->session()->flash('error', "User with name '$username' already exists and password is wrong");
+            return redirect()->route('root');
+        }
+
+        $this->user_repository->save($user);
+
+        \Auth::login($user);
+
+        return redirect()->route('root');
+    }
+
+    public function logout()
+    {
+        \Auth::logout();
+        return redirect()->route('root');
     }
 }

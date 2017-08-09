@@ -17,8 +17,8 @@
 
 // Auth::routes();
 
-Route::get('/', 'HomeController@index');
+Route::get('/', 'HomeController@index')->name('root');
 
-Route::post('/login', 'Auth\LoginController@login')->name('login');
+Route::post('/login', 'Auth\LoginController@login')->name('login')->middleware('guest');
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
-Route::post('/register', 'Auth\RegisterController@register')->name('register');
+// Route::post('/register', 'Auth\RegisterController@register')->name('register');

@@ -92,6 +92,8 @@
             </div>
         </nav>
 
+        @include('layouts._global-messages')
+
         @yield('content')
     </div>
 
