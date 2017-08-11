@@ -17,6 +17,13 @@ interface UserRepositoryInterface
     public function getByUsername($username);
 
     /**
+     * @param int $id
+     *
+     * @return UserEntityInterface
+     */
+    public function getById($id);
+
+    /**
      * @param array $ids
      *
      * @return UserEntityInterface[]

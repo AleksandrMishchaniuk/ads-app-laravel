@@ -45,6 +45,14 @@ class EloquentUserRepository implements UserRepositoryInterface
     /**
      * {@inheritDoc}
      */
+    public function getById($id)
+    {
+        return $this->model->where(User::ATTR_ID, $id)->first();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function save(UserEntityInterface $user)
     {
         return $user->save();

@@ -30,7 +30,7 @@ class EloquentAdRepository implements AdRepositoryInterface
      */
     public function getAll()
     {
-        return $this->toArray($this->model->all()->orderBy(Ad::ATTR_ID));
+        return $this->toArray($this->model->all()->orderBy(Ad::ATTR_ID, 'desc'));
     }
 
     /**
@@ -42,7 +42,8 @@ class EloquentAdRepository implements AdRepositoryInterface
             $page = 1;
         }
         $offset = ($page - 1) * $count;
-        $result = $this->model->offset($offset)->limit($count)->orderBy(Ad::ATTR_ID)->get();
+        $result = $this->model  ->offset($offset)->limit($count)
+                                ->orderBy(Ad::ATTR_ID, 'desc')->get();
         return $this->toArray($result);
     }
 

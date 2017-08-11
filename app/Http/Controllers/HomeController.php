@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Factories\Interfaces\PaginatorFactoryInterface;
-use App\Repositories\EloquentAdRepository;
-use App\Repositories\EloquentUserRepository;
+use App\Repositories\Interfaces\AdRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Models\User;
 use App\Models\Ad;
 
@@ -21,11 +21,9 @@ class HomeController extends Controller
     public function index(
         Request $request,
         PaginatorFactoryInterface $paginator_factory,
-        EloquentAdRepository $ad_repository,
-        EloquentUserRepository $user_repository
+        AdRepositoryInterface $ad_repository,
+        UserRepositoryInterface $user_repository
     ) {
-        // $users = User::all()->toArray();
-
         $page = $request->query('page', 1);
         $ads = $ad_repository->getPage(self::AD_PAGE_COUNT, $page);
         $ads_total_count = $ad_repository->getCount();

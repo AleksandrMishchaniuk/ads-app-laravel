@@ -3,17 +3,38 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\Interfaces\AdRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Factories\Interfaces\AdFactoryInterface;
 
 class AdsController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @var AdFactoryInterface
      */
-    public function index()
-    {
-        //
+    protected $ad_factory;
+
+    /**
+     * @var AdRepositoryInterface
+     */
+    protected $ad_repository;
+
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $user_repository;
+
+    /**
+     * @param array $data
+     */
+    public function __construct(
+        AdFactoryInterface $ad_factory,
+        AdRepositoryInterface $ad_repository,
+        UserRepositoryInterface $user_repository
+    ) {
+        $this->ad_factory = $ad_factory;
+        $this->ad_repository = $ad_repository;
+        $this->user_repository = $user_repository;
     }
 
     /**
@@ -45,7 +66,15 @@ class AdsController extends Controller
      */
     public function show($id)
     {
-        //
+        $ad = $this->ad_repository->getById((int) $id);
+        if (!$ad) {
+            return $this->notFoundResponse();
+        }
+        $author = $this->user_repository->getById($ad->getUserId());
+        return view('ads.show', [
+            'ad' => $ad,
+            'author' => $author
+        ]);
     }
 
     /**
@@ -80,5 +109,13 @@ class AdsController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    protected function notFoundResponse()
+    {
+        return response('Not Found', 404);
     }
 }

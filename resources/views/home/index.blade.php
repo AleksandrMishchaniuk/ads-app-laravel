@@ -17,7 +17,7 @@
                 </h4>
                 <div>
                   <small>
-                    Author: {{ $users[$ad->getUserId()]->getUsername() }}
+                    Author: <span class="author">{{ $users[$ad->getUserId()]->getUsername() }}</span>
                     /
                     {{ $ad->getCreatedAt() }}
                   </small>
