@@ -16,7 +16,14 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
-        'username' => $faker->unique()->name,
+        'username' => $faker->unique()->name(),
         'password' => $password ?: $password = bcrypt('secret'),
+    ];
+});
+
+$factory->define(App\Models\Ad::class, function (Faker\Generator $faker) {
+    return [
+        'title' => $faker->word(),
+        'description' => $faker->paragraph(5),
     ];
 });

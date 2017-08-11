@@ -76,7 +76,7 @@
                             {!! Form::close() !!}
                         @else
                             <p class="navbar-text">
-                                Loged in as <strong>{{ Auth::user()->username }}</strong>
+                                Loged in as <strong>{{ Auth::user()->getUsername() }}</strong>
                             </p>
                             {!! Form::open([
                               'method' => 'POST', 'route' => 'logout',

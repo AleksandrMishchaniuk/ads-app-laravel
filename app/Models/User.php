@@ -13,15 +13,6 @@ class User extends Authenticatable implements UserEntityInterface
     const ATTR_REMEMBER_TOKEN = 'remember_token';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        self::ATTR_USERNAME, self::ATTR_PASSWORD,
-    ];
-
-    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
