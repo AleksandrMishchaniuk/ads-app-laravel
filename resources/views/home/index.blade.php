@@ -12,6 +12,8 @@
           @foreach ($ad_page as $ad)
             <div class="panel panel-default">
               <div class="panel-heading">
+
+                @include('ads._manage-buttons', ['ad' => $ad])
                 <h4>
                   {{ link_to_route('ad.show', $ad->getTitle(), ['id' => $ad->getid()]) }}
                 </h4>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\AdFormRequest;
 use App\Repositories\Interfaces\AdRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Factories\Interfaces\AdFactoryInterface;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\Request;
 
 class AdsController extends Controller
 {
@@ -44,18 +46,26 @@ class AdsController extends Controller
      */
     public function create()
     {
-        //
+        $ad = $this->ad_factory->create([]);
+        $this->authorize('create', $ad);
+        return view('ads.create', ['ad' => $ad]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  AdFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AdFormRequest $request, Authenticatable $user)
     {
-        //
+        $data = $request->input();
+        $data['user_id'] = $user->getId();
+        $ad = $this->ad_factory->create($data);
+        $this->authorize('create', $ad);
+        $this->ad_repository->save($ad);
+        $request->session()->flash('notice', 'Ad was created');
+        return redirect()->route('ad.show', ['id' => $ad->getId()]);
     }
 
     /**
@@ -85,19 +95,33 @@ class AdsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $ad = $this->ad_repository->getById((int) $id);
+        if (!$ad) {
+            return $this->notFoundResponse();
+        }
+        $this->authorize('manage', $ad);
+        return view('ads.edit', ['ad' => $ad]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  AdFormRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AdFormRequest $request, $id)
     {
-        //
+        $ad = $this->ad_repository->getById((int) $id);
+        if (!$ad) {
+            return $this->notFoundResponse();
+        }
+        $this->authorize('manage', $ad);
+        $ad->setTitle($request->input('title'));
+        $ad->setDescription($request->input('description'));
+        $this->ad_repository->save($ad);
+        $request->session()->flash('notice', 'Ad was updated');
+        return redirect()->route('ad.show', ['id' => $ad->getId()]);
     }
 
     /**
@@ -106,9 +130,16 @@ class AdsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $ad = $this->ad_repository->getById((int) $id);
+        if (!$ad) {
+            return $this->notFoundResponse();
+        }
+        $this->authorize('manage', $ad);
+        $this->ad_repository->destroyById($ad->getId());
+        $request->session()->flash('notice', 'Ad was deleted');
+        return back();
     }
 
     /**

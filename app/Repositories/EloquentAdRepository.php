@@ -80,6 +80,14 @@ class EloquentAdRepository implements AdRepositoryInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function destroyById($id)
+    {
+        return $this->model->destroy($id);
+    }
+
+    /**
      * @param Collection $collection
      *
      * @return AdEntityInterface[]

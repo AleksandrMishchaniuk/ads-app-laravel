@@ -47,4 +47,11 @@ interface AdRepositoryInterface
      * @return bool
      */
     public function save(AdEntityInterface $user);
+
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
+    public function destroyById($id);
 }

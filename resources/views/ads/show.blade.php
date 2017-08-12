@@ -14,6 +14,7 @@
       <br>
       <br>
       <p class="text">{{ $ad->getDescription() }}</p>
+      @include('ads._manage-buttons', ['ad' => $ad])
     </div>
   </div>
 </div>
